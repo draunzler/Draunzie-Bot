@@ -47,7 +47,7 @@ async def on_message(message):
           response_text = await response.json()
           await message.channel.send(response_text['bot'])
         else:
-          await message.channel.send("Failed to get response from server.")
+          await message.channel.send("Waiting on the server.")
 
 @client.command(pass_context=True)
 async def meme(ctx):
