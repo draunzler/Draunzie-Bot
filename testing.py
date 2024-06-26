@@ -2,43 +2,45 @@ import discord
 from discord.ext import commands
 import random
 import aiohttp
+import os
+from dotenv import load_dotenv
 
-client = discord.Client()
-client = commands.Bot(command_prefix = '!')
+load_dotenv()
+TOKEN = os.getenv('ID')
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+client = commands.Bot(command_prefix = '/', intents=intents)
 
 @client.event
 async def on_ready():
-    print('Me a bot but me still Draunzie')
-
-words = ["ayo", "hey", "hello", "sup", "what up", "what's up", "yo", "Ayo", "Hey", "Hello", "Sup", "What up", "What's up"]
-reply = ["ay!", "sup!", "hey", "sup dawg!"]
-ask = ["what is your name", "what's your name"]
-mean_reply = ["imagine abusing a bot to boost your ego", "stay virgin <:KEKW:888019808061390888>"]
-mean = ["dumb bot", "shit bot", "stupid bot", "trash bot"]
-funny = ["lol", "looooool", "lool", "<:KEKW:888019808061390888>", "lmao", "lmfao", "lmafaooo", "loooooooool", "bahahaha", "hahaha"]
+  for guild in client.guilds:
+    if guild.name == "OnlyFriends":
+      break
+        
+  print(f'{client.user} has connected to Discord!')
+  print(f'{guild.name}(id: {guild.id})')
 
 @client.event
 async def on_message(message):
   if message.author == client.user:
     return
   
-  if any(word in message.content.split()for word in words):
-    await message.channel.send(random.choice(reply))
+  # print("message:", message)
+  # print(f"Message content: {message.content}")
+  if message.content.startswith("hey sunday" or "Hey sunday" or "Hey Sunday" or "hey Sunday"):
 
-  if any(word in message.content.split()for word in funny):
-    await message.channel.send("<:KEKW:888019808061390888>")
-    
-  if message.content == "wtf":
-    await message.channel.send("<:KEKW:888019808061390888>")
-    
-  if any(word in message.content for word in ask):
-    await message.channel.send("Hey! My name is Draunzie Bot. I'm named after my developer")
-
-  if message.content.startswith("gay bot"):
-    await message.channel.send("I'm straighter than your dick")
-
-  if any(word in message.content for word in mean):
-    await message.channel.send(random.choice(mean_reply))
+    async with aiohttp.ClientSession() as session:
+      payload = message.content + " within 1800 characters"
+      req_body = {'prompt': payload}
+      print(req_body, type(req_body))
+      async with session.post("https://sunday-hx52.onrender.com", json=req_body, headers={'Content-Type': 'application/json'}) as response:
+        if response.status == 200:
+          response_text = await response.json()
+          await message.channel.send(response_text['bot'])
+        else:
+          await message.channel.send("Failed to get response from server.")
 
 @client.command(pass_context=True)
 async def meme(ctx):
@@ -71,4 +73,4 @@ async def unban(ctx, *, member):
     await ctx.send(f'Unbanned {user.mention}')
     return
 
-client.run('OTYzNDM0NTUyNDk0MjcyNjAy.G_ZR2l.DfjU0eE6tQpqVJNMM42ZhY6KOvsanTQyKH-0w4')
+client.run(TOKEN)
