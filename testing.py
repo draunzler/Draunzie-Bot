@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import random
 import aiohttp
+from aiohttp import web
 import os
 from dotenv import load_dotenv
 
@@ -10,6 +11,12 @@ TOKEN = os.getenv('ID')
 
 intents = discord.Intents.default()
 intents.message_content = True
+
+async def handle(request):
+    return web.Response(text="Hello, this is a web server running within your Discord bot.")
+
+app = web.Application()
+app.router.add_get('/', handle)
 
 client = commands.Bot(command_prefix = '/', intents=intents)
 
@@ -73,4 +80,14 @@ async def unban(ctx, *, member):
     await ctx.send(f'Unbanned {user.mention}')
     return
 
-client.run(TOKEN)
+async def start_bot():
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', int(os.getenv('PORT', 8080)))
+    await site.start()
+
+    await client.start(TOKEN)
+
+import asyncio
+loop = asyncio.get_event_loop()
+loop.run_until_complete(start_bot())
