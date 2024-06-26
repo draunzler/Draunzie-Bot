@@ -1,5 +1,9 @@
 import discord
 from discord.ext import commands
+import os
+from dotenv import load_dotenv
+load_dotenv()
+TOKEN = os.getenv('ID')
 
 client = discord.Client()
 client = commands.Bot(command_prefix = '!')
@@ -23,4 +27,4 @@ async def unban(ctx, *, member):
     await ctx.send(f'Unbanned {user.mention}')
     return
 
-client.run('OTYzNDM0NTUyNDk0MjcyNjAy.G_ZR2l.DfjU0eE6tQpqVJNMM42ZhY6KOvsanTQyKH-0w4')
+client.run(TOKEN)
